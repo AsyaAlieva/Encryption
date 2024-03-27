@@ -1,12 +1,44 @@
 # Произвести шифрование произвольной фразы следующими тремя методами:
 # Шифр Цезаря,гаммирование по модулю 2, DES
 
+def interface():
+    print("\nМеню")
+    print("---------------------------")
+    print("1. Шифр Цезаря")
+    print("2. Гаммирование по модулю 2")
+    print("3. DES")
+    print("4. Выход")
+    print("---------------------------")
+    print("Выберите метод шифрования: ")
+    item = int(input())
+
+    if item == 1:
+        method_choice(item)
+    elif item == 2:
+        method_choice(item)
+    elif item == 3:
+        method_choice(item)
+    elif item == 4:
+        return
+
+def method_choice(item):
+    if item == 1:
+        phrase = input("Введите фразу для шифрования: ")
+        position = int(input("Введите шаг сдвига: "))
+        func1(phrase, position)
+    elif item == 2:
+        phrase = input("Введите фразу для шифрования: ")
+        key = input("Введите ключ: ")
+        gamma_module_2(phrase, key)
+    elif item == 3:
+        print("Алгоритм шифрования DES еще не реализован, но скоро будет :)")
+
 def func1(words, position): #Шифр Цезаря
     answer = []
     for i in words:
         num_before = ord(i)
         num_after = 0
-        if i.isalpha(): #условие, чтобы не затрагивать ничего, кроме букв
+        if i.isalpha(): #условие, чтобы не затрагивать ничего, кроме букв (русских и английских)
             if num_before >= ord('А') and num_before <= ord('Я'):
                 num_after = ((num_before - ord('А') + position) % 32) + ord('А')
             elif num_before >= ord('а') and num_before <= ord('я'):
@@ -21,36 +53,30 @@ def func1(words, position): #Шифр Цезаря
         answer.append(letter_after)
     print(f"Зашифрованный текст: {''.join(answer)}")
 
-# phrase = input("Введите фразу для шифрования: ")
-# position = int(input("Введите шаг сдвига: "))
-# func1(phrase, position)
-############################################################################################
-############################################################################################
 
 def gamma_module_2(words, key): #гаммирование по модулю 2
     symbols = list(words)
     key_symbols = list(key)
     answer = []
 
-    for j in key_symbols:
+    for j in key_symbols: #уравниваем длину ключа и длину текста
         if len(key_symbols) < len(symbols):
             key_symbols.append(j)
 
     list_bin = []
     for s1, s2 in zip(symbols, key_symbols): #проходимся по спискам, и переводим каждый символ в двоичную систему
 
-
-        ord_s1 = ord(s1)
+        ord_s1 = ord(s1) #переводим в кодировку аски
         ord_s2 = ord(s2)
 
         bin_s1 = bin(ord_s1).replace("0b", "")
         bin_s2 = bin(ord_s2).replace("0b", "")
         zero = '0'
 
-        while len(bin_s1) < 8:
+        while len(bin_s1) < 8: #приписываем в начало нули, если длина двоичного кода меньше 8 (для символа текста)
             bin_s1 = zero + bin_s1
 
-        while len(bin_s2) < 8:
+        while len(bin_s2) < 8: #приписываем в начало нули, если длина двоичного кода меньше 8 (для символа ключа)
             bin_s2 = zero + bin_s2
 
         temp = ''
@@ -60,30 +86,29 @@ def gamma_module_2(words, key): #гаммирование по модулю 2
             else:
                 temp += '1'
 
-
-        list_bin.append(temp)
+        list_bin.append(temp) #добавляем двоичный код после операции XOR будущего символа
     for el in list_bin: #переводим числа из двоичной системы (полученных при шифровании) в символы
         decimal_number = int(el, 2)
 
-        if decimal_number < ord('A'):
-            num_after = ((decimal_number + ord('A')) % 26) + ord('A')
-        elif decimal_number > ord('Z'):
-            num_after = ((decimal_number + ord('Z')) % 26) + ord('Z') #!!
-        elif decimal_number < ord('a'):
-            num_after = ((decimal_number + ord('a')) % 26) + ord('a')
-        elif decimal_number > ord('z'):
-            num_after = ((decimal_number + ord('z')) % 26) + ord('z') #!!
-        else:
-            num_after = decimal_number
+        if words == words.upper() and key == key.upper(): #условия для нахождения в пределах англ. алфавита
+            if decimal_number < ord('A'):
+                num_after = ((decimal_number + ord('A')) % 26) + ord('A')
+            elif decimal_number > ord('Z'):
+                num_after = ((decimal_number + ord('Z')) % 26) + ord('Z')
+            else:
+                num_after = decimal_number
+        elif words == words.lower() and key == key.lower():
+            if decimal_number < ord('a'):
+                num_after = ((decimal_number + ord('a')) % 26) + ord('a')
+            elif decimal_number > ord('z'):
+                num_after = ((decimal_number + ord('z')) % 26) + ord('z')
+            else:
+                num_after = decimal_number
 
-        answer.append(chr(num_after))
+        answer.append(chr(num_after)) #формирование ответа
 
     print(''.join(answer))
 
-
-phrase = input("Введите фразу для шифрования: ")
-key = input("Введите ключ: ")
-gamma_module_2(phrase, key)
 
 def des(words): #DES
     matrix_start_replace = [
@@ -107,8 +132,7 @@ def des(words): #DES
         [34, 2, 42, 10, 50, 18, 58, 26],
         [33, 1, 41, 9, 49, 17, 57, 25]
     ]
+    pass
 
-# num_before >= ord('A') and num_before <= ord('Z'):
-# num_after = ((num_before - ord('A') + position) % 26) + ord('A')
-# num_before >= ord('a') and num_before <= ord('z'):
-# num_after = ((num_before - ord('a') + position) % 26) + ord('a')
+if __name__ == "__main__":
+    interface()
